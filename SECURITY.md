@@ -133,14 +133,21 @@ Indicators of Compromise you should search for on your instance:
   installing whatever the attacker ships into that second repo next.
   Because a broken placeholder URL could still prompt a curious user to
   search GitHub for "BotBrowser-Plugin" and re-find the attacker's repo
-  by name, the purified fork now goes further: both the in-UI **Install
-  command** and **Update command** fields have been rewritten to a
-  multi-line shell comment that explicitly tells the user that the
-  companion plugin is disabled in this fork, that its upstream repo
-  belongs to the same author who shipped the backdoor, and that
-  installing it would defeat the point of this fork. The final line is
-  a safe `echo` of the same warning, so even if a user pastes and runs
-  the "command" they only print the warning to their terminal.
+  by name, the purified fork goes further: both the in-UI **Install
+  command** and **Update command** fields, the surrounding help
+  paragraph ("Make sure `enableServerPlugins: true` is set… clone the
+  plugin repo into `plugins/bot-browser`"), the "This only needs git"
+  reassurance, the section title ("BotBrowser Plugin & Relay Fallback"
+  → "Server Plugin Channel (disabled) & Relay Fallback"), the two
+  "until the plugin is installed" status phrasings, the installed-state
+  banner, and the "Source Plugin Markers" description have **all** been
+  rewritten. The new copy makes it unambiguous that the server-plugin
+  channel is disabled by design in this fork, that the upstream plugin
+  repo must not be cloned, and that the public CORS relays (or
+  direct fetches) are the intended transport. The Install/Update
+  command fields themselves hold a multi-line shell comment plus a safe
+  `echo` of the warning, so even if a user pastes and runs them nothing
+  happens beyond printing that warning to their terminal.
 
 ### `modules/services/updateChecker.js`
 - `checkForUpdates()` now short-circuits on the first call and never
