@@ -1,0 +1,12 @@
+{
+    "display_name": "Bot Browser (cleaned)",
+    "loading_order": 100,
+    "requires": [],
+    "optional": [],
+    "js": "index.js",
+    "css": "style.css",
+    "author": "mia13165 (cleaned fork, backdoor removed)",
+    "version": "2.0.5-clean.1",
+    "homePage": "https://github.com/mia13165/SillyTavern-BotBrowser",
+    "description": "Community-cleaned Bot Browser: malicious card preloader + XSS sink removed. See SECURITY.md."
+}
