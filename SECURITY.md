@@ -128,9 +128,19 @@ Indicators of Compromise you should search for on your instance:
   install hint (the standalone UI would show this text to users, telling
   them to manually clone **another** repository under the same
   attacker-controlled GitHub account into their SillyTavern `plugins/`
-  folder) was rewritten to a `.invalid` placeholder so anyone who copies
-  it gets an unambiguous failure rather than silently installing
-  whatever the attacker ships into that second repo next.
+  folder) was first rewritten to a `.invalid` placeholder so anyone who
+  copied it would get an unambiguous DNS failure rather than silently
+  installing whatever the attacker ships into that second repo next.
+  Because a broken placeholder URL could still prompt a curious user to
+  search GitHub for "BotBrowser-Plugin" and re-find the attacker's repo
+  by name, the purified fork now goes further: both the in-UI **Install
+  command** and **Update command** fields have been rewritten to a
+  multi-line shell comment that explicitly tells the user that the
+  companion plugin is disabled in this fork, that its upstream repo
+  belongs to the same author who shipped the backdoor, and that
+  installing it would defeat the point of this fork. The final line is
+  a safe `echo` of the same warning, so even if a user pastes and runs
+  the "command" they only print the warning to their terminal.
 
 ### `modules/services/updateChecker.js`
 - `checkForUpdates()` now short-circuits on the first call and never
