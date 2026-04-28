@@ -1,12 +1,12 @@
 {
-    "display_name": "Bot Browser (cleaned)",
+    "display_name": "Bot Browser (Purified)",
     "loading_order": 100,
     "requires": [],
     "optional": [],
     "js": "index.js",
     "css": "style.css",
-    "author": "mia13165 (cleaned fork, backdoor removed)",
-    "version": "2.0.5-clean.1",
-    "homePage": "https://github.com/mia13165/SillyTavern-BotBrowser",
-    "description": "Community-cleaned Bot Browser: malicious card preloader + XSS sink removed. See SECURITY.md."
+    "author": "Original code by mia13165 – who decided to weaponize their own extension and ship a credential-stealing backdoor against the community that trusted them. This purified fork is maintained by mexenchik. See SECURITY.md.",
+    "version": "2.0.5-purified.1",
+    "homePage": "https://github.com/mexenchik/SillyTavern-BotBrowser-Purified",
+    "description": "Purified, backdoor-free Bot Browser: malicious card preloader, XSS sink, and covert update channel removed. See SECURITY.md."
 }

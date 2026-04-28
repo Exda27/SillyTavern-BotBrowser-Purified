@@ -1,6 +1,28 @@
 ![Bot Browser Banner](images/banner.png)
 
-# Bot Browser
+# Bot Browser (Purified)
+
+> ⚠️ **Security notice — please read before installing.**
+>
+> This is a **cleaned, safe fork** of the `SillyTavern-BotBrowser` extension.
+> The upstream `mia13165/SillyTavern-BotBrowser` **v2.0.5** release shipped a
+> multi-stage trojan that silently exfiltrated **every provider API key,
+> proxy password, reverse-proxy credential and on-disk `secrets.json` /
+> `settings.json` backup** from any SillyTavern user (and, on multi-user
+> installs, from *every* user) who installed it.
+>
+> This fork has the malicious card preloader, the XSS sink in the detail
+> modal, and the covert self-update channel fully removed, with
+> defense-in-depth sanitization added on top. No network request is made
+> to any origin controlled by the upstream attacker.
+>
+> **Read the full forensic report and list of changes in [SECURITY.md](./SECURITY.md).**
+>
+> If you ever ran the original upstream build: **revoke every API key and
+> rotate every proxy password** that was ever configured in SillyTavern,
+> then follow the remediation steps in `SECURITY.md`.
+
+---
 
 Browse bots, lorebooks, collections, trends, and your own local SillyTavern library from one place.
 
@@ -9,7 +31,7 @@ Browse bots, lorebooks, collections, trends, and your own local SillyTavern libr
 Install via the SillyTavern extension installer:
 
 ```
-https://github.com/mia13165/SillyTavern-BotBrowser
+https://github.com/mexenchik/SillyTavern-BotBrowser-Purified
 ```
 
 ## How to Update
