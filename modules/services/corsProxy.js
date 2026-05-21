@@ -191,7 +191,11 @@ function isDebugEnabled() {
 }
 
 function isPuterEnabled() {
-    return typeof window === 'undefined' || window.__BOT_BROWSER_DISABLE_PUTER_PROXY !== true;
+    if (typeof window === 'undefined') return false;
+    if (window.__BOT_BROWSER_DISABLE_PUTER_PROXY === true) return false;
+    // Important: keep Puter opt-in only. Automatic Puter auth popups can open blank
+    // embedded windows in some browser/privacy setups and stall requests.
+    return window.__BOT_BROWSER_ENABLE_PUTER_PROXY === true;
 }
 
 function debugLog(...args) {
@@ -469,16 +473,32 @@ export async function loadPuter() {
         const script = document.createElement('script');
         script.src = PUTER_CDN_URL;
         script.async = true;
+        const maxInitWaitMs = 5000;
+        const pollIntervalMs = 50;
+        let settled = false;
+        const startedAt = Date.now();
+
+        const finish = (ok) => {
+            if (settled) return;
+            settled = true;
+            puterLoaded = ok === true;
+            resolve(ok === true);
+        };
 
         script.onload = () => {
-            // Wait a bit for puter to initialize
+            // Wait a bit for puter to initialize, but do not loop forever.
             const checkReady = () => {
                 if (isPuterAvailable()) {
-                    puterLoaded = true;
                     debugLog('[CORS Proxy] Puter.js loaded successfully');
-                    resolve(true);
+                    finish(true);
+                    return;
+                }
+
+                if ((Date.now() - startedAt) >= maxInitWaitMs) {
+                    debugWarn('[CORS Proxy] Puter.js script loaded but API never became ready');
+                    finish(false);
                 } else {
-                    setTimeout(checkReady, 50);
+                    setTimeout(checkReady, pollIntervalMs);
                 }
             };
             setTimeout(checkReady, 100);
@@ -486,8 +506,7 @@ export async function loadPuter() {
 
         script.onerror = () => {
             debugWarn('[CORS Proxy] Failed to load Puter.js from CDN');
-            puterLoaded = false;
-            resolve(false);
+            finish(false);
         };
 
         document.head.appendChild(script);
@@ -653,7 +672,11 @@ export function buildProxyUrl(proxyType, targetUrl, options = {}) {
  * @returns {string[]} Array of proxy types to try
  */
 export function getProxyChainForService(service) {
-    return SERVICE_PROXY_MAP[service] || SERVICE_PROXY_MAP.default;
+    const chain = SERVICE_PROXY_MAP[service] || SERVICE_PROXY_MAP.default;
+    if (!isPuterEnabled()) {
+        return chain.filter((proxyType) => proxyType !== PROXY_TYPES.PUTER);
+    }
+    return chain;
 }
 
 function withTimeout(fetchOptions, timeoutMs) {
