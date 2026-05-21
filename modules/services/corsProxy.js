@@ -469,16 +469,32 @@ export async function loadPuter() {
         const script = document.createElement('script');
         script.src = PUTER_CDN_URL;
         script.async = true;
+        const maxInitWaitMs = 5000;
+        const pollIntervalMs = 50;
+        let settled = false;
+        const startedAt = Date.now();
+
+        const finish = (ok) => {
+            if (settled) return;
+            settled = true;
+            puterLoaded = ok === true;
+            resolve(ok === true);
+        };
 
         script.onload = () => {
-            // Wait a bit for puter to initialize
+            // Wait a bit for puter to initialize, but do not loop forever.
             const checkReady = () => {
                 if (isPuterAvailable()) {
-                    puterLoaded = true;
                     debugLog('[CORS Proxy] Puter.js loaded successfully');
-                    resolve(true);
+                    finish(true);
+                    return;
+                }
+
+                if ((Date.now() - startedAt) >= maxInitWaitMs) {
+                    debugWarn('[CORS Proxy] Puter.js script loaded but API never became ready');
+                    finish(false);
                 } else {
-                    setTimeout(checkReady, 50);
+                    setTimeout(checkReady, pollIntervalMs);
                 }
             };
             setTimeout(checkReady, 100);
@@ -486,8 +502,7 @@ export async function loadPuter() {
 
         script.onerror = () => {
             debugWarn('[CORS Proxy] Failed to load Puter.js from CDN');
-            puterLoaded = false;
-            resolve(false);
+            finish(false);
         };
 
         document.head.appendChild(script);
