@@ -698,7 +698,9 @@ export async function getCharacterTavernFollowIds() {
         },
     }, {
         allowPublicAuth: true,
-        proxyChain: ['corsproxy_io', 'cors_lol', 'puter'],
+        // Avoid forcing Puter here; in some environments its embedded auth popup
+        // opens blank and stalls this request path.
+        proxyChain: ['corsproxy_io', 'cors_lol'],
     });
 
     if (!response.ok) {

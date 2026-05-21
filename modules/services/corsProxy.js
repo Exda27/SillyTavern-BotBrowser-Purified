@@ -191,7 +191,11 @@ function isDebugEnabled() {
 }
 
 function isPuterEnabled() {
-    return typeof window === 'undefined' || window.__BOT_BROWSER_DISABLE_PUTER_PROXY !== true;
+    if (typeof window === 'undefined') return false;
+    if (window.__BOT_BROWSER_DISABLE_PUTER_PROXY === true) return false;
+    // Important: keep Puter opt-in only. Automatic Puter auth popups can open blank
+    // embedded windows in some browser/privacy setups and stall requests.
+    return window.__BOT_BROWSER_ENABLE_PUTER_PROXY === true;
 }
 
 function debugLog(...args) {
@@ -668,7 +672,11 @@ export function buildProxyUrl(proxyType, targetUrl, options = {}) {
  * @returns {string[]} Array of proxy types to try
  */
 export function getProxyChainForService(service) {
-    return SERVICE_PROXY_MAP[service] || SERVICE_PROXY_MAP.default;
+    const chain = SERVICE_PROXY_MAP[service] || SERVICE_PROXY_MAP.default;
+    if (!isPuterEnabled()) {
+        return chain.filter((proxyType) => proxyType !== PROXY_TYPES.PUTER);
+    }
+    return chain;
 }
 
 function withTimeout(fetchOptions, timeoutMs) {
